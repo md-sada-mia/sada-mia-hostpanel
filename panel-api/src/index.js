@@ -65,9 +65,7 @@ app.use(errorHandler);
 const PORT = config.panelPort;
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`[HostPanel] API listening on http://0.0.0.0:${PORT}`);
-  console.log(
-    `[HostPanel] Config: ${process.env.HOSTPANEL_CONF || "/etc/hostpanel/config.json"}`,
-  );
+  console.log(`[HostPanel] config: ${config.configPath}`);
 });
 
 module.exports = app;
