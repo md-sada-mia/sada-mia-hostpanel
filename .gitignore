@@ -1,16 +1,23 @@
-# Node.js
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.npm/
-package-lock.json
-pnpm-lock.yaml
-
 # Panel specific
 .dev-config.json
+dev-apps/
+dev-logs/
 logs/
 *.log
+
+# Dependencies
+node_modules/
+.pnp
+.pnp.*
+
+# Next.js & Builds
+.next/
+out/
+build/
+.next-env.d.ts
+.vercel
+*.tsbuildinfo
+next-env.d.ts
 
 # Environment variables
 .env
@@ -31,3 +38,4 @@ logs/
 # OS files
 .DS_Store
 Thumbs.db
+credentials.txt

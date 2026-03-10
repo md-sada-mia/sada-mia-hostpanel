@@ -17,6 +17,7 @@
     "fs-extra": "^11.2.0",
     "helmet": "^7.1.0",
     "morgan": "^1.10.0",
+    "pm2": "^6.0.14",
     "proper-lockfile": "^4.1.2",
     "simple-git": "^3.25.0",
     "uuid": "^10.0.0"

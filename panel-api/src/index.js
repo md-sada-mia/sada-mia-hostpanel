@@ -13,6 +13,8 @@ const webhookRouter = require("./routes/webhook");
 const databaseRouter = require("./routes/database");
 const sslRouter = require("./routes/ssl");
 const envRouter = require("./routes/env");
+const settingsRouter = require("./routes/settings");
+const githubRouter = require("./routes/github");
 const { errorHandler } = require("./middleware/errorHandler");
 
 const app = express();
@@ -44,6 +46,8 @@ app.use("/api/apps", deployRouter);
 app.use("/api/apps", databaseRouter);
 app.use("/api/apps", sslRouter);
 app.use("/api/apps", envRouter);
+app.use("/api/settings", settingsRouter);
+app.use("/api/github", githubRouter);
 app.use("/webhook", webhookRouter);
 
 // ─── Health check ─────────────────────────────────────────────────────────────

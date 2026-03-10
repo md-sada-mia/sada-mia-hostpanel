@@ -39,18 +39,39 @@ async function runCmd(slug, cmd, args, cwd, env = {}) {
 }
 
 // ─── Git ──────────────────────────────────────────────────────────────────────
+function getAuthUrl(repoUrl) {
+  const token = config.githubAccessToken;
+  if (!token || !repoUrl.includes('github.com')) return repoUrl;
+  try {
+    const u = new URL(repoUrl);
+    u.username = 'oauth2';
+    u.password = token;
+    return u.toString();
+  } catch (e) {
+    return repoUrl;
+  }
+}
+
 async function gitCloneOrPull(slug, repoUrl, branch, repoDir) {
+  const authUrl = getAuthUrl(repoUrl);
+  
   if (await fs.pathExists(path.join(repoDir, '.git'))) {
     await log(slug, `Pulling latest from branch '${branch}'…`);
     const git = simpleGit(repoDir);
+    await git.remote(['set-url', 'origin', authUrl]);
     await git.fetch();
     await git.checkout(branch);
     await git.pull('origin', branch, { '--rebase': false });
+    // Restore clean URL so token implies no lingering credentials
+    await git.remote(['set-url', 'origin', repoUrl]);
   } else {
-    await log(slug, `Cloning ${repoUrl} (branch: ${branch})…`);
+    await log(slug, `Cloning repository (branch: ${branch})…`);
     await fs.ensureDir(repoDir);
     const git = simpleGit();
-    await git.clone(repoUrl, repoDir, ['--branch', branch, '--depth', '1']);
+    await git.clone(authUrl, repoDir, ['--branch', branch, '--depth', '1']);
+    // Restore clean URL
+    const repoGit = simpleGit(repoDir);
+    await repoGit.remote(['set-url', 'origin', repoUrl]);
   }
 }
 

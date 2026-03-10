@@ -36,6 +36,8 @@ PANEL_USER="hostpanel"
 NODE_MAJOR=20
 PHP_VER="8.4"   # Default PHP version
 
+export COMPOSER_ALLOW_SUPERUSER=1
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 header "Sada Mia HostPanel Installer"
@@ -132,12 +134,23 @@ if is_installed composer; then
   warn "Composer $(composer --version --no-ansi 2>/dev/null | awk '{print $3}') already installed — skipping"
 else
   info "Installing Composer..."
-  EXPECTED_CHECKSUM="$(php -r 'copy("https://composer.github.io/installer.sig", "php://stdout");')"
-  php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+  info "Fetching installer signature..."
+  EXPECTED_CHECKSUM="$(curl -fsSL --connect-timeout 10 https://composer.github.io/installer.sig)"
+  
+  info "Downloading installer..."
+  curl -fsSL --connect-timeout 10 -o composer-setup.php https://getcomposer.org/installer
+  
+  info "Verifying installer..."
   ACTUAL_CHECKSUM="$(php -r "echo hash_file('sha384', 'composer-setup.php');")"
-  [[ "$EXPECTED_CHECKSUM" != "$ACTUAL_CHECKSUM" ]] && { rm composer-setup.php; error "Composer installer checksum mismatch"; }
+  
+  if [[ "$EXPECTED_CHECKSUM" != "$ACTUAL_CHECKSUM" ]]; then
+    rm -f composer-setup.php
+    error "Composer installer checksum mismatch"
+  fi
+  
+  info "Running installer..."
   php composer-setup.php --quiet --install-dir=/usr/local/bin --filename=composer
-  rm composer-setup.php
+  rm -f composer-setup.php
   success "Composer $(composer --version --no-ansi | awk '{print $3}') installed"
 fi
 

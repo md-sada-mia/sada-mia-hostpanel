@@ -16,325 +16,60 @@
     />
     <link rel="stylesheet" href="style.css" />
   </head>
-  <body>
-    <!-- ─── Sidebar ─────────────────────────────────────────────────────────────── -->
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <div class="logo">
-          <div class="logo-icon">⚡</div>
-          <div>
-            <div class="logo-name">HostPanel</div>
-            <div class="logo-sub">Sada Mia</div>
-          </div>
-        </div>
-      </div>
-
-      <nav class="sidebar-nav">
-        <a
-          href="#"
-          class="nav-item active"
-          data-view="dashboard"
-          id="nav-dashboard"
-        >
-          <span class="nav-icon">◈</span> Dashboard
-        </a>
-        <a href="#" class="nav-item" data-view="apps" id="nav-apps">
-          <span class="nav-icon">⬡</span> Applications
-        </a>
-        <a href="#" class="nav-item" data-view="settings" id="nav-settings">
-          <span class="nav-icon">◎</span> Settings
-        </a>
-      </nav>
-
-      <div class="sidebar-footer">
-        <div class="server-status" id="server-status">
-          <span class="pulse-dot"></span>
-          <span>Server Online</span>
-        </div>
-      </div>
-    </aside>
-
     <!-- ─── Main ─────────────────────────────────────────────────────────────────── -->
-    <main class="main" id="main">
-      <!-- Top Bar -->
-      <header class="topbar">
-        <div class="topbar-left">
-          <h1 class="page-title" id="page-title">Dashboard</h1>
-        </div>
-        <div class="topbar-right">
-          <button
-            class="btn btn-primary"
-            id="btn-new-app"
-            onclick="openModal('modal-deploy')"
-          >
-            <span>＋</span> New App
-          </button>
-        </div>
-      </header>
-
-      <!-- ─── Dashboard View ───────────────────────────────────────────────────── -->
-      <section class="view active" id="view-dashboard">
-        <!-- Stats row -->
-        <div class="stats-row" id="stats-row">
-          <div class="stat-card">
-            <div class="stat-value" id="stat-total">—</div>
-            <div class="stat-label">Total Apps</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="stat-running">—</div>
-            <div class="stat-label">Running</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="stat-error">—</div>
-            <div class="stat-label">Errors</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="stat-laravel">—</div>
-            <div class="stat-label">Laravel</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value" id="stat-nextjs">—</div>
-            <div class="stat-label">Next.js</div>
+    <main class="main" id="main" style="margin-left: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh;">
+      
+      <div class="settings-card" style="max-width: 500px; width: 100%; text-align: center; padding: 3rem 2rem;">
+        <div class="logo" style="justify-content: center; margin-bottom: 2rem;">
+          <div class="logo-icon" style="font-size: 3rem;">⚡</div>
+          <div>
+            <div class="logo-name" style="font-size: 1.5rem;">HostPanel</div>
+            <div class="logo-sub">Launcher Setup</div>
           </div>
         </div>
 
-        <!-- App grid -->
-        <div class="section-header">
-          <h2 class="section-title">Applications</h2>
-          <div class="search-wrap">
-            <input
-              type="text"
-              class="search-input"
-              id="search-apps"
-              placeholder="Search apps…"
-              oninput="filterApps()"
-            />
-          </div>
-        </div>
-
-        <div class="app-grid" id="app-grid">
-          <div class="empty-state" id="empty-state" style="display: none">
-            <div class="empty-icon">🚀</div>
-            <div class="empty-title">No applications yet</div>
-            <div class="empty-sub">
-              Click <strong>+ New App</strong> to deploy your first application.
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ─── Settings View ────────────────────────────────────────────────────── -->
-      <section class="view" id="view-settings">
-        <div class="settings-card">
-          <h2 class="settings-title">API Authentication</h2>
-          <p class="settings-desc">
-            Enter your panel API secret to authenticate. It is saved in your
-            browser's localStorage.
+        <div id="auth-section">
+          <h2 class="settings-title" style="text-align: center;">Authenticate</h2>
+          <p class="settings-desc" style="text-align: center; margin-bottom: 1.5rem;">
+            Enter your API Secret to access the launcher control.
           </p>
           <div class="form-group">
-            <label class="form-label" for="inp-token">API Secret Token</label>
-            <div class="token-row">
-              <input
-                type="password"
-                class="form-input"
-                id="inp-token"
-                placeholder="Paste your PANEL_SECRET here…"
-              />
-              <button class="btn btn-primary" onclick="saveToken()">
-                Save
-              </button>
-            </div>
-            <p class="form-hint">
-              Found in <code>/etc/hostpanel/config.json</code> →
-              <code>panelSecret</code>
-            </p>
+            <input type="password" class="form-input" id="inp-token" placeholder="Paste your PANEL_SECRET here…" style="text-align: center; margin-bottom: 1rem;" />
+            <button class="btn btn-primary w-full" style="width: 100%; justify-content: center;" onclick="saveToken()">Login</button>
           </div>
-          <div class="divider"></div>
-          <h2 class="settings-title">About</h2>
-          <p class="settings-desc">
-            Sada Mia HostPanel v1.0 — lightweight Laravel + Next.js hosting, no
-            Docker required.
-          </p>
         </div>
-      </section>
+
+        <div id="launcher-section" style="display: none;">
+          <h2 class="settings-title" style="text-align: center;">Next.js Premium Panel</h2>
+          
+          <div class="github-status-box mt-3" style="padding: 1.5rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-card); display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+            <div id="pm2-status-icon" style="font-size: 3rem; animation: pulse 2s infinite;">⚪</div>
+            <div id="pm2-status-text" style="font-weight: 500; font-size: 1.1rem;">Checking status...</div>
+            
+            <div id="pm2-actions" style="display: flex; gap: 1rem; margin-top: 1rem; width: 100%; justify-content: center;">
+              <button id="btn-start" class="btn btn-primary" style="display: none; width: 100%; justify-content: center;" onclick="startPanel()">🚀 Launch Next.js Panel</button>
+              <button id="btn-stop" class="btn btn-danger" style="display: none; width: 100%; justify-content: center;" onclick="stopPanel()">🛑 Shutdown Next.js Panel</button>
+            </div>
+          </div>
+          
+          <div id="panel-link-container" style="margin-top: 1.5rem; display: none;">
+            <a id="panel-link" href="#" target="_blank" class="btn btn-ghost" style="color: var(--primary);">Go to Management Dashboard ↗</a>
+          </div>
+        </div>
+
+      </div>
     </main>
-
-    <!-- ─── Modal: Deploy New App ──────────────────────────────────────────────── -->
-    <div
-      class="modal-overlay"
-      id="modal-deploy"
-      onclick="closeOnOverlay(event, 'modal-deploy')"
-    >
-      <div class="modal">
-        <div class="modal-header">
-          <h2 class="modal-title">Deploy New App</h2>
-          <button class="modal-close" onclick="closeModal('modal-deploy')">
-            ✕
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="form-group">
-            <label class="form-label" for="d-name"
-              >App Name <span class="req">*</span></label
-            >
-            <input
-              type="text"
-              class="form-input"
-              id="d-name"
-              placeholder="my-blog"
-            />
-            <p class="form-hint">Used as a slug — lowercase, hyphens only</p>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label" for="d-type"
-                >App Type <span class="req">*</span></label
-              >
-              <select class="form-input" id="d-type">
-                <option value="laravel">🐘 Laravel (PHP)</option>
-                <option value="nextjs">⬡ Next.js (Node)</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="d-branch">Git Branch</label>
-              <input
-                type="text"
-                class="form-input"
-                id="d-branch"
-                value="main"
-              />
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="d-repo"
-              >Repository URL <span class="req">*</span></label
-            >
-            <input
-              type="text"
-              class="form-input"
-              id="d-repo"
-              placeholder="https://github.com/user/repo.git"
-            />
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="d-domain"
-              >Domain <span class="req">*</span></label
-            >
-            <input
-              type="text"
-              class="form-input"
-              id="d-domain"
-              placeholder="myapp.example.com"
-            />
-          </div>
-          <div class="form-check">
-            <input type="checkbox" id="d-createdb" checked />
-            <label for="d-createdb"
-              >Automatically provision a PostgreSQL database</label
-            >
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-ghost" onclick="closeModal('modal-deploy')">
-            Cancel
-          </button>
-          <button
-            class="btn btn-primary"
-            id="btn-deploy-submit"
-            onclick="submitNewApp()"
-          >
-            🚀 Create &amp; Deploy
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ─── Modal: Logs ───────────────────────────────────────────────────────── -->
-    <div
-      class="modal-overlay"
-      id="modal-logs"
-      onclick="closeOnOverlay(event, 'modal-logs')"
-    >
-      <div class="modal modal-wide">
-        <div class="modal-header">
-          <h2 class="modal-title">Deploy Logs — <span id="log-slug"></span></h2>
-          <div class="modal-header-actions">
-            <button class="btn btn-ghost btn-sm" onclick="refreshLogs()">
-              ↻ Refresh
-            </button>
-            <button class="modal-close" onclick="closeModal('modal-logs')">
-              ✕
-            </button>
-          </div>
-        </div>
-        <div class="modal-body">
-          <pre class="log-viewer" id="log-content">Loading…</pre>
-        </div>
-      </div>
-    </div>
-
-    <!-- ─── Modal: Environment Editor ────────────────────────────────────────── -->
-    <div
-      class="modal-overlay"
-      id="modal-env"
-      onclick="closeOnOverlay(event, 'modal-env')"
-    >
-      <div class="modal modal-wide">
-        <div class="modal-header">
-          <h2 class="modal-title">Environment — <span id="env-slug"></span></h2>
-          <button class="modal-close" onclick="closeModal('modal-env')">
-            ✕
-          </button>
-        </div>
-        <div class="modal-body">
-          <p class="settings-desc">
-            Edit key–value pairs. Sensitive values are masked. Changes take
-            effect on next deploy.
-          </p>
-          <div id="env-rows"></div>
-          <button class="btn btn-ghost btn-sm mt-2" onclick="addEnvRow()">
-            ＋ Add Row
-          </button>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-ghost" onclick="closeModal('modal-env')">
-            Cancel
-          </button>
-          <button class="btn btn-primary" onclick="saveEnv()">
-            💾 Save Environment
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ─── Confirm dialog ────────────────────────────────────────────────────── -->
-    <div
-      class="modal-overlay"
-      id="modal-confirm"
-      onclick="closeOnOverlay(event, 'modal-confirm')"
-    >
-      <div class="modal modal-sm">
-        <div class="modal-header">
-          <h2 class="modal-title" id="confirm-title">Confirm</h2>
-          <button class="modal-close" onclick="closeModal('modal-confirm')">
-            ✕
-          </button>
-        </div>
-        <div class="modal-body">
-          <p id="confirm-message">Are you sure?</p>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-ghost" onclick="closeModal('modal-confirm')">
-            Cancel
-          </button>
-          <button class="btn btn-danger" id="confirm-ok-btn">Confirm</button>
-        </div>
-      </div>
-    </div>
 
     <!-- ─── Toast ─────────────────────────────────────────────────────────────── -->
     <div class="toast-container" id="toast-container"></div>
-
     <script src="app.js"></script>
+    <style>
+      @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.5; }
+        100% { opacity: 1; }
+      }
+      .w-full { width: 100%; }
+    </style>
   </body>
 </html>
