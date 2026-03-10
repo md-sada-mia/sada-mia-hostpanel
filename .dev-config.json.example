@@ -1,0 +1,12 @@
+{
+  "_comment": "Copy this file to .dev-config.json in the project root for local development",
+  "panelSecret": "dev-secret-change-me",
+  "panelPort": 4567,
+  "appsDir": "/tmp/hostpanel-dev/apps",
+  "logDir": "/tmp/hostpanel-dev/logs",
+  "nginxVhostsDir": "/tmp/hostpanel-dev/nginx-vhosts",
+  "phpVersion": "8.2",
+  "portRange": { "min": 3000, "max": 3999 },
+  "adminEmail": "dev@localhost",
+  "appsFile": "/tmp/hostpanel-dev/apps.json"
+}

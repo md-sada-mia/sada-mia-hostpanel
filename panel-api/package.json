@@ -1,0 +1,31 @@
+{
+  "name": "sada-mia-hostpanel-api",
+  "version": "1.0.0",
+  "description": "Self-hosted web hosting panel API — Laravel + Next.js",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "execa": "^9.3.0",
+    "express": "^4.19.2",
+    "express-async-errors": "^3.1.1",
+    "express-rate-limit": "^7.3.1",
+    "express-validator": "^7.1.0",
+    "fs-extra": "^11.2.0",
+    "helmet": "^7.1.0",
+    "morgan": "^1.10.0",
+    "proper-lockfile": "^4.1.2",
+    "simple-git": "^3.25.0",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "MIT"
+}
