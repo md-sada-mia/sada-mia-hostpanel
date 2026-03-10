@@ -1,20 +1,26 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
 const NAV_ITEMS = [
-  { icon: '◈', label: 'Dashboard', href: '/' },
+  { icon: '⊞', label: 'Dashboard', href: '/' },
+  { icon: '🚀', label: 'New App', href: '/apps/new' },
   { icon: '◎', label: 'Settings', href: '/settings' },
 ];
 
-interface SidebarProps {
-  onNewApp: () => void;
-}
-
-export default function Sidebar({ onNewApp }: SidebarProps) {
+export default function Sidebar({ onNewApp }: { onNewApp?: () => void }) {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
+  const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
+
+  const handleNew = () => { 
+    setOpen(false); 
+    if (onNewApp) onNewApp(); 
+    else router.push('/apps/new'); 
+  };
 
   return (
     <>
@@ -68,7 +74,7 @@ export default function Sidebar({ onNewApp }: SidebarProps) {
 
         {/* New App Button */}
         <div className="p-4 border-t border-border">
-          <Button className="w-full" onClick={onNewApp}>
+          <Button className="w-full" onClick={handleNew}>
             ＋ New App
           </Button>
         </div>

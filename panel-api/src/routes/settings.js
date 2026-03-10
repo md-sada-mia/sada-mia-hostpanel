@@ -59,7 +59,10 @@ function getPm2Status(callback) {
 router.get('/ui/status', (req, res) => {
   getPm2Status((err, status) => {
     if (err) return res.status(500).json({ error: 'Failed to communicate with PM2' });
-    res.json({ status });
+    res.json({ 
+      status, 
+      port: config.isDev ? 3001 : 3000 
+    });
   });
 });
 
@@ -67,30 +70,29 @@ router.get('/ui/status', (req, res) => {
 router.post('/ui/start', (req, res) => {
   pm2.connect((err) => {
     if (err) return res.status(500).json({ error: 'PM2 Connection Failed' });
-    
-    pm2.start({
+
+    const startOptions = {
       name: UI_PM2_NAME,
       script: 'npm',
-      args: 'run start',
+      args: config.isDev ? 'run dev' : 'run start',
       cwd: UI_DIR,
       env: {
-        PORT: 3000,
-        NODE_ENV: 'production'
+        PORT: config.isDev ? 3001 : 3000,
+        NODE_ENV: config.isDev ? 'development' : 'production'
       }
-    }, (err, apps) => {
-      pm2.disconnect();
-      if (err) {
-        // If start fails, maybe it just needs to be restarted if it exists
-        pm2.connect(err2 => {
-          pm2.restart(UI_PM2_NAME, (err3) => {
-            pm2.disconnect();
-            if (err3) return res.status(500).json({ error: 'Failed to start Next.js Panel' });
-            return res.json({ success: true, status: 'started' });
-          });
-        });
-        return;
-      }
-      res.json({ success: true, status: 'started' });
+    };
+
+    // Always delete first to ensure configuration (args, env) is updated
+    pm2.delete(UI_PM2_NAME, (errDelete) => {
+      // Ignore errDelete if process didn't exist
+      pm2.start(startOptions, (errStart) => {
+        pm2.disconnect();
+        if (errStart) {
+          console.error('PM2 Start Error:', errStart);
+          return res.status(500).json({ error: 'Failed to start Next.js Panel' });
+        }
+        res.json({ success: true, status: 'started' });
+      });
     });
   });
 });
@@ -103,6 +105,31 @@ router.post('/ui/stop', (req, res) => {
       pm2.disconnect();
       if (err) return res.status(500).json({ error: 'Failed to stop Next.js Panel' });
       res.json({ success: true, status: 'stopped' });
+    });
+  });
+});
+
+// GET /api/settings/ui/logs
+router.get('/ui/logs', (req, res) => {
+  pm2.connect((err) => {
+    if (err) return res.status(500).json({ error: 'PM2 Connection Failed' });
+    pm2.describe(UI_PM2_NAME, (err, list) => {
+      pm2.disconnect();
+      if (err || !list || list.length === 0) {
+        return res.status(404).json({ error: 'Process not found' });
+      }
+      
+      const logPath = list[0].pm2_env.pm_out_log_path;
+      const errorPath = list[0].pm2_env.pm_err_log_path;
+      const fs = require('fs');
+      
+      try {
+        const outLogs = fs.existsSync(logPath) ? fs.readFileSync(logPath, 'utf8').split('\n').slice(-100).join('\n') : '';
+        const errLogs = fs.existsSync(errorPath) ? fs.readFileSync(errorPath, 'utf8').split('\n').slice(-100).join('\n') : '';
+        res.json({ logs: outLogs + '\n' + errLogs });
+      } catch (e) {
+        res.status(500).json({ error: 'Failed to read logs' });
+      }
     });
   });
 });

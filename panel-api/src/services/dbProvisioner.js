@@ -1,10 +1,10 @@
-'use strict';
-/**
- * PostgreSQL provisioner — creates/drops databases and users via psql.
- */
-const { execa } = require('execa');
+const config = require('../config');
 
 async function psql(sql) {
+  if (config.isDev) {
+    console.log(`[Dev] Skipping psql: ${sql}`);
+    return '';
+  }
   const result = await execa('sudo', ['-u', 'postgres', 'psql', '-c', sql], { reject: false, all: true });
   if (result.exitCode !== 0) {
     // Ignore "already exists" errors silently

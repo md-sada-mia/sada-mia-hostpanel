@@ -24,6 +24,13 @@ async function writeNginxConf(app) {
   }
 
   const dest = confPath(app.slug);
+  
+  if (config.isDev) {
+    await fs.ensureDir(path.dirname(dest));
+    await fs.writeFile(dest, conf, 'utf8');
+    return;
+  }
+
   // Use sudo tee because Nginx dir may be owned by root
   const proc = execa('sudo', ['tee', dest], { input: conf, reject: false });
   const result = await proc;
@@ -32,12 +39,20 @@ async function writeNginxConf(app) {
 
 async function removeNginxConf(slug) {
   const dest = confPath(slug);
+  if (config.isDev) {
+    await fs.remove(dest);
+    return;
+  }
   try {
     await execa('sudo', ['rm', '-f', dest]);
   } catch { /* ignore if not exists */ }
 }
 
 async function validateAndReload() {
+  if (config.isDev) {
+    console.log('[Dev] Skipping Nginx validation and reload');
+    return;
+  }
   const test = await execa('sudo', ['nginx', '-t'], { reject: false, all: true });
   if (test.exitCode !== 0) {
     throw new Error(`Nginx config test failed:\n${test.all}`);

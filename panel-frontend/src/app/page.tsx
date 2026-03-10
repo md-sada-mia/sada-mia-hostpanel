@@ -1,24 +1,24 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { apiFetch } from '@/lib/api';
-import type { App, AppsResponse, AppResponse, DeployPayload } from '@/lib/types';
+import type { App, AppsResponse, AppResponse } from '@/lib/types';
 
 import Sidebar from '@/components/Sidebar';
 import StatsBar from '@/components/StatsBar';
 import AppGrid from '@/components/AppGrid';
-import DeployModal from '@/components/DeployModal';
 import LogsModal from '@/components/LogsModal';
 import EnvModal from '@/components/EnvModal';
 import AuthGate from '@/components/AuthGate';
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [authed, setAuthed] = useState(false);
   const [apps, setApps] = useState<App[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [deployOpen, setDeployOpen] = useState(false);
   const [logsApp, setLogsApp] = useState<string | null>(null);
   const [envApp, setEnvApp] = useState<string | null>(null);
 
@@ -48,17 +48,6 @@ export default function DashboardPage() {
     loadApps();
   };
 
-  const handleDeploy = async (payload: DeployPayload) => {
-    try {
-      const res = await apiFetch<AppResponse>('/api/apps', { method: 'POST', body: JSON.stringify(payload) });
-      toast.success(`App "${payload.name}" created! Triggering deploy...`);
-      await apiFetch(`/api/apps/${res.app.slug}/deploy`, { method: 'POST' });
-      setDeployOpen(false);
-      setTimeout(loadApps, 1500);
-    } catch (e: unknown) {
-      if (e instanceof Error) toast.error(e.message);
-    }
-  };
 
   const handleRedeploy = async (slug: string) => {
     try {
@@ -114,7 +103,7 @@ export default function DashboardPage() {
 
   return (
     <div className="flex min-h-screen bg-background">
-      <Sidebar onNewApp={() => setDeployOpen(true)} />
+      <Sidebar />
 
       <main className="flex-1 flex flex-col min-h-screen lg:pl-64">
         <div className="p-6 space-y-6">
@@ -139,16 +128,11 @@ export default function DashboardPage() {
             onEnv={slug => setEnvApp(slug)}
             onSSL={handleSSL}
             onDelete={handleDelete}
-            onNewApp={() => setDeployOpen(true)}
+            onNewApp={() => router.push('/apps/new')}
           />
         </div>
       </main>
 
-      <DeployModal
-        open={deployOpen}
-        onClose={() => setDeployOpen(false)}
-        onDeploy={handleDeploy}
-      />
       <LogsModal
         slug={logsApp}
         onClose={() => setLogsApp(null)}

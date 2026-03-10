@@ -67,6 +67,7 @@ async function generateNextjsEnv(slug, domain, dbCreds = {}) {
     NODE_ENV: 'production',
     NEXTAUTH_URL: `https://${domain}`,
     NEXTAUTH_SECRET: randomBytes(32).toString('hex'),
+    NEXT_FONT_GOOGLE_OPTOUT: '1',
     DATABASE_URL: dbCreds.dbName
       ? `postgresql://${dbCreds.dbUser}:${dbCreds.dbPassword}@${dbCreds.dbHost || '127.0.0.1'}:${dbCreds.dbPort || 5432}/${dbCreds.dbName}`
       : '',

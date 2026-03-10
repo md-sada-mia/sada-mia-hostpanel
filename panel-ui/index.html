@@ -55,6 +55,18 @@
           <div id="panel-link-container" style="margin-top: 1.5rem; display: none;">
             <a id="panel-link" href="#" target="_blank" class="btn btn-ghost" style="color: var(--primary);">Go to Management Dashboard ↗</a>
           </div>
+
+          <!-- Log Viewer -->
+          <div id="log-container" style="display: none; margin-top: 1.5rem; text-align: left;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Console Logs</span>
+              <div style="display: flex; gap: 0.5rem;">
+                <button onclick="copyLogs()" style="background: none; border: none; color: var(--primary); font-size: 0.7rem; cursor: pointer; text-decoration: underline;">Copy</button>
+                <button onclick="clearLogs()" style="background: none; border: none; color: var(--primary); font-size: 0.7rem; cursor: pointer; text-decoration: underline;">Clear</button>
+              </div>
+            </div>
+            <pre id="pm2-logs" style="background: #000; color: #0f0; padding: 1rem; border-radius: var(--radius); font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; min-height: 150px; max-height: 300px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; border: 1px solid #333;"></pre>
+          </div>
         </div>
 
       </div>

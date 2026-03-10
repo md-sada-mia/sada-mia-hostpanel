@@ -92,10 +92,16 @@ async function pollStatus() {
       btnStart.style.display = 'none';
       btnStop.style.display = 'flex';
       linkContainer.style.display = 'block';
+      document.getElementById('log-container').style.display = 'block';
+      
+      if (!logInterval) {
+        logInterval = setInterval(fetchLogs, 2000);
+        fetchLogs();
+      }
       
       const host = window.location.hostname;
-      // Using exactly port 3000 without proxying through Nginx for the dev setup
-      panelLink.href = `http://${host}:3000`;
+      const port = data.port || 3000;
+      panelLink.href = `http://${host}:${port}`;
     } else {
       icon.textContent = '🔴';
       text.textContent = 'Next.js Panel is OFFLINE';
@@ -112,9 +118,76 @@ async function pollStatus() {
   }
 }
 
+let logInterval = null;
+
+async function fetchLogs() {
+  const logEl = document.getElementById('pm2-logs');
+  const logContainer = document.getElementById('log-container');
+  try {
+    const data = await api('GET', '/api/settings/ui/logs');
+    if (data.logs) {
+      logContainer.style.display = 'block';
+      logEl.textContent = data.logs;
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+  } catch (e) {
+    // silently fail logging if process is missing
+  }
+}
+
+function clearLogs() {
+  document.getElementById('pm2-logs').textContent = '';
+}
+
+async function copyLogs() {
+  const text = document.getElementById('pm2-logs').textContent;
+  if (!text) return;
+  
+  // Try modern API first
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast('Logs copied to clipboard!', 'success');
+      return;
+    } catch (err) {
+      console.warn('Modern clipboard API failed, trying fallback...');
+    }
+  }
+
+  // Fallback method
+  try {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    // Ensure textarea is not visible but part of DOM
+    textArea.style.position = "fixed";
+    textArea.style.left = "-9999px";
+    textArea.style.top = "0";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    const successful = document.execCommand('copy');
+    document.body.removeChild(textArea);
+    
+    if (successful) {
+      toast('Logs copied (fallback mode)!', 'success');
+    } else {
+      throw new Error('Fallback failed');
+    }
+  } catch (err) {
+    toast('Failed to copy logs', 'error');
+    console.error('Final copy failure:', err);
+  }
+}
+
 async function startPanel() {
   document.getElementById('pm2-status-icon').textContent = '⏳';
   document.getElementById('pm2-status-text').textContent = 'Starting Panel...';
+  // Show log area immediately
+  document.getElementById('log-container').style.display = 'block';
+  document.getElementById('pm2-logs').textContent = 'Initialising Next.js...\n';
+  
+  if (!logInterval) logInterval = setInterval(fetchLogs, 2000);
+
   try {
     await api('POST', '/api/settings/ui/start');
     toast('Booting Next.js...', 'success');
@@ -129,6 +202,10 @@ async function stopPanel() {
   try {
     await api('POST', '/api/settings/ui/stop');
     toast('Next.js process killed.', 'success');
+    if (logInterval) {
+      clearInterval(logInterval);
+      logInterval = null;
+    }
   } catch (e) {
     toast(`Failed to stop: ${e.message}`, 'error');
   }

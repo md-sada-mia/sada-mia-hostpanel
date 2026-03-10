@@ -120,7 +120,12 @@ async function deployNextjs(app, repoDir) {
 
   // Install & build
   await runCmd(slug, 'npm', ['ci', '--prefer-offline', '--quiet'], repoDir);
-  await runCmd(slug, 'npm', ['run', 'build'], repoDir, { PORT: String(port) });
+  
+  await log(slug, 'Running optimized build…');
+  await runCmd(slug, 'npm', ['run', 'build'], repoDir, { 
+    PORT: String(port),
+    NEXT_FONT_GOOGLE_OPTOUT: '1'
+  });
 
   // PM2 start or restart
   const { stdout: pm2List } = await execa('pm2', ['list', '--no-ansi', '--no-color'], { reject: false });

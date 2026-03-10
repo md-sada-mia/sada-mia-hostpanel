@@ -8,11 +8,11 @@ const { execa } = require('execa');
 const config = require('../config');
 
 function poolPath(slug) {
-  return `/etc/php/${config.phpVersion}/fpm/pool.d/${slug}.conf`;
+  return path.join(config.fpmPoolsDir, `${slug}.conf`);
 }
 
 async function createPool(slug) {
-  const socket = `/run/php/php${config.phpVersion}-fpm-${slug}.sock`;
+  const socket = path.join('/run/php', `php${config.phpVersion}-fpm-${slug}.sock`);
   const repoDir = path.join(config.appsDir, slug, 'repo');
   const poolConf = `; Sada Mia HostPanel — PHP-FPM pool for ${slug}
 ; Auto-generated — do not edit manually
@@ -30,9 +30,17 @@ pm.min_spare_servers = 1
 pm.max_spare_servers = 3
 pm.max_requests = 500
 chdir = ${repoDir}
-php_admin_value[error_log] = /var/log/hostpanel/${slug}-fpm.log
+php_admin_value[error_log] = ${path.join(config.logDir, `${slug}-fpm.log`)}
 php_admin_flag[log_errors] = on
 `;
+
+  if (config.isDev) {
+    const dest = poolPath(slug);
+    const fs = require('fs-extra');
+    await fs.ensureDir(path.dirname(dest));
+    await fs.writeFile(dest, poolConf, 'utf8');
+    return;
+  }
 
   const proc = await execa('sudo', ['tee', poolPath(slug)], { input: poolConf, reject: false });
   if (proc.exitCode !== 0) throw new Error(`Failed to write FPM pool: ${proc.stderr}`);
@@ -41,11 +49,17 @@ php_admin_flag[log_errors] = on
 }
 
 async function removePool(slug) {
+  if (config.isDev) {
+    const fs = require('fs-extra');
+    await fs.remove(poolPath(slug));
+    return;
+  }
   await execa('sudo', ['rm', '-f', poolPath(slug)], { reject: false });
   await reloadFpm();
 }
 
 async function reloadFpm() {
+  if (config.isDev) return;
   await execa('sudo', ['systemctl', 'reload', `php${config.phpVersion}-fpm`], { reject: false });
 }
 

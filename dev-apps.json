@@ -1,1 +1,19 @@
-[]
+[
+  {
+    "slug": "dfdf",
+    "name": "dfdf",
+    "repoUrl": "https://github.com/md-sada-mia/nextjs-hello-app.git",
+    "domain": "myapp.test",
+    "type": "nextjs",
+    "branch": "main",
+    "port": 3000,
+    "webhookToken": "5d1ff5cef2c446bfb9aa3fa6c818aeea",
+    "dbName": "hp_dfdf",
+    "dbUser": "hp_dfdf_user",
+    "phpVersion": "8.4",
+    "createdAt": "2026-03-10T20:22:12.052Z",
+    "updatedAt": "2026-03-10T20:22:41.494Z",
+    "status": "running",
+    "lastDeploy": "2026-03-10T20:22:12.108Z"
+  }
+]
